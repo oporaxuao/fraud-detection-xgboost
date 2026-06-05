@@ -51,19 +51,19 @@ A exploração combina análise visual com diagnóstico estatístico formal. As 
 
 **Desbalanceamento das classes** — apenas 0,58% das transações são fraudes, o que define toda a estratégia de modelagem.
 
-![Desbalanceamento das classes](01_desbalanceamento.png)
+![Desbalanceamento das classes](images/01_desbalanceamento.png)
 
 **Valor das transações** — fraudes têm valor médio 8 vezes maior que transações legítimas.
 
-![Valor das transações por classe](02_valor_transacoes.png)
+![Valor das transações por classe](images/02_valor_transacoes.png)
 
 **Taxa de fraude por categoria** — categorias online como shopping_net e misc_net lideram.
 
-![Fraude por categoria](03_fraude_por_categoria.png)
+![Fraude por categoria](images/03_fraude_por_categoria.png)
 
 **Perfil das fraudes** — cruzamento de gênero e faixa de valor.
 
-![Perfil das fraudes](04_perfil_fraudes.png)
+![Perfil das fraudes](images/04_perfil_fraudes.png)
 
 #### Diagnóstico estatístico
 
@@ -71,23 +71,23 @@ Mais do que gráficos, esta fase aplica testes estatísticos formais para fundam
 
 **Correlação de Pearson** entre as variáveis numéricas e a fraude.
 
-![Correlação de Pearson](05a_correlacao.png)
+![Correlação de Pearson](images/05a_correlacao.png)
 
 **Correlação de Spearman** — robusta a assimetria, mais adequada a dados financeiros, com threshold formal de 0.85 para detecção de redundância.
 
-![Correlação de Spearman](05e_spearman.png)
+![Correlação de Spearman](images/05e_spearman.png)
 
 **Diagnóstico de multicolinearidade (VIF)** — confirma quantitativamente a redundância severa entre as coordenadas geográficas (VIF acima de 24.000 para longitude), justificando sua remoção.
 
-![VIF](05f_vif.png)
+![VIF](images/05f_vif.png)
 
 **Diagnóstico de normalidade (Q-Q plot)** — comprova que `amt` e `city_pop` são fortemente assimétricas, validando o uso de Spearman e a escolha do XGBoost.
 
-![Normalidade](05g_normalidade.png)
+![Normalidade](images/05g_normalidade.png)
 
 **Significância estatística (OLS diagnóstico)** — teste de hipótese por coeficiente. Apenas `amt` apresenta significância linear absoluta; as coordenadas confirmam o resultado do VIF.
 
-![P-valores OLS](05h_pvalores.png)
+![P-valores OLS](images/05h_pvalores.png)
 
 ### 3. Preparação dos Dados
 
@@ -103,23 +103,23 @@ Comparação de estratégias de balanceamento (SMOTE vs scale_pos_weight) e de a
 
 **Comparação dos modelos e curva ROC.**
 
-![Comparação dos modelos](06_comparacao_modelos.png)
+![Comparação dos modelos](images/06_comparacao_modelos.png)
 
 **Matrizes de confusão** dos três modelos avaliados.
 
-![Matrizes de confusão](07_matrizes_confusao.png)
+![Matrizes de confusão](images/07_matrizes_confusao.png)
 
 **Importância das features** no modelo XGBoost.
 
-![Feature importance](08_feature_importance.png)
+![Feature importance](images/08_feature_importance.png)
 
 **Cross-validation estratificado** — confirma a estabilidade do desempenho entre diferentes divisões dos dados.
 
-![Cross-validation](11_cross_validation.png)
+![Cross-validation](images/11_cross_validation.png)
 
 **Curva de aprendizado** — validação converge em F1 de 0.857 com gap controlado de 0.14, indicando modelo bem calibrado com leve overfitting típico do XGBoost.
 
-![Curva de aprendizado](12_learning_curve.png)
+![Curva de aprendizado](images/12_learning_curve.png)
 
 #### Interpretabilidade com SHAP
 
@@ -127,21 +127,21 @@ Indo além da importância nativa, o SHAP explica a direção e a magnitude do e
 
 **Summary plot** — `amt` domina; valores altos empurram fortemente para fraude.
 
-![SHAP summary](13a_shap_summary.png)
+![SHAP summary](images/13a_shap_summary.png)
 
 **Beeswarm** — distribuição completa dos valores SHAP por feature.
 
-![SHAP beeswarm](13b_shap_beeswarm.png)
+![SHAP beeswarm](images/13b_shap_beeswarm.png)
 
 **Waterfall** — explicação passo a passo de uma fraude individual, útil para auditoria e para analistas de risco.
 
-![SHAP waterfall](13c_shap_waterfall.png)
+![SHAP waterfall](images/13c_shap_waterfall.png)
 
 #### Experimentos de refinamento
 
 Três hipóteses nascidas dos diagnósticos estatísticos foram testadas: remoção de `city_pop`, log-transform em `amt` e log-transform em `city_pop`. Nenhuma melhorou o modelo, e esse é um resultado válido: remover `city_pop` piorou o saldo (o SHAP já mostrava seu valor não linear), e as transformações logarítmicas não tiveram efeito porque o XGBoost é invariante a transformações monótonas.
 
-![Experimentos](14_experimentos.png)
+![Experimentos](images/14_experimentos.png)
 
 ### 5. Avaliação
 
@@ -149,11 +149,11 @@ O modelo campeão (XGBoost com scale_pos_weight, otimizado) é avaliado contra o
 
 **Otimização do threshold** — em vez do padrão 0.5, o threshold é ajustado para maximizar o saldo financeiro.
 
-![Análise de threshold](09_threshold_analysis.png)
+![Análise de threshold](images/09_threshold_analysis.png)
 
 **Impacto financeiro por estratégia** — comparação do saldo líquido entre as abordagens.
 
-![Saldo por cenário](10_saldo_por_cenario.png)
+![Saldo por cenário](images/10_saldo_por_cenario.png)
 
 Todos os critérios de sucesso foram atendidos: Recall alto, Precisão preservada, AUC-ROC de 0.99 e saldo líquido positivo de USD 849 mil.
 
